@@ -24,8 +24,8 @@ const loadCategories = () =>{
     .catch((error)=> console.log(error))
 }
 
-const loadVideos = () =>{
-    fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
+const loadVideos = (searchText = "") =>{
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title =${searchText}`)
     .then(res => res.json())
     .then(data =>displayLoadVideos(data.videos))
     .catch((error =>console.log(error)))
@@ -38,13 +38,33 @@ const categoriesVideo = (id) =>{
     .then(res =>res.json())
     .then(data => {
         const activeBtn = document.getElementById(`btn-${id}`);
-      console.log(activeBtn)
+  activeBtn.classList.add("active");
         displayLoadVideos(data.category)
     })
     .catch(error => console.log(error))
 };
 
+const loadDetails =async (videoId)=>{
+const url = `https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`;
+const res = await fetch(url);
+const data = await res.json();
+displayDetails(data.video);
+}
+const displayDetails = (video) =>{
+    const detailContainer = document.getElementById('modal-content')
 
+   detailContainer.innerHTML = `
+        <img src=${video.thumbnail}/>
+<p>${video.description}</p>
+    `;
+   
+   
+   
+    //way1
+    // document.getElementById("showModalData").click();
+    //way-2
+    document.getElementById("my_modal_5").showModal();
+};
 //======demo========================
 const cardDemo={
     "category_id": "1003",
@@ -73,7 +93,7 @@ const displayLoadVideos = (videos) =>{
     videoContainer.classList.remove("grid")
     videoContainer.innerHTML = `
     <div class = "min-h-[300] flex flex-col  gap-5  justify-center items-center">
-    <img src ="assets/icon.png"/>
+    <img src ="icon.png"/>
     <h2 class = "text-xl font-bold text-center"> No Content Here In This 
     Category</h2>
     </div>
@@ -85,7 +105,7 @@ const displayLoadVideos = (videos) =>{
    }
     videoContainer.innerHTML = "";
     videos.forEach((video)=>{
-        console.log(video)
+        // console.log(video)
         // create a card
         const card = document.createElement('div')
         card.classList = 'card card-compact'
@@ -113,7 +133,7 @@ const displayLoadVideos = (videos) =>{
 
 
  </div>
-   <p></p>
+   <p> <button onclick= "loadDetails('${video.video_id}')" class = "btn btn-sm btn-error">Details</button></p>
    </div>
   </div>
         
@@ -142,6 +162,9 @@ categoryContainer.append( buttonContainer)
 
 };
 
+document.getElementById("search-input").addEventListener("keyup",(e)=>{
+console.log(e.target.value)
+});
 loadCategories();
 
 loadVideos();
